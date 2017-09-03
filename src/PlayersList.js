@@ -43,14 +43,19 @@ const styles = {
   },
 
   search:{
+
     marginRight:'70%',
     marginLeft:'30%',
-    width:'30%'
+    width:'30%',
+
 
   },
 
   paging:{
-    marginLeft:'35%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    backgroundColor:'rgba(255, 255, 255,0.8)',
+    textAlign: 'center',
 
   },
   suspected:{
@@ -61,6 +66,7 @@ const styles = {
   },
   header:{
     color:'#0A0A0A',
+    fontWeight: 'bold',
     fontSize:'14px'
   }
 }
@@ -200,8 +206,9 @@ class PlayersList extends React.Component {
 
 
                 <Table
-                    height={'35vh'}
+                    height={'28vh'}
                     bodyStyle={{overflow:'visible'}}
+                    style={{backgroundColor:'rgba(255, 255, 255,0.8)'}}
 
                 >
                   <TableHeader
