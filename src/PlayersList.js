@@ -138,14 +138,24 @@ class PlayersList extends React.Component {
 
   onPageChange(page){
     const currentIndex = (page - 1) * 5;
-    this.setState({
-      players: this.state.allPlayers.slice(currentIndex, currentIndex + 5),
-      number: page,
-      levelFilter:"all",
-      currentIndex:currentIndex,
-    });
-  }
+    const level = this.state.levelFilter;
+    if(level === "all"){
+      this.setState({
+        players: this.state.allPlayers.slice(currentIndex, currentIndex + 5),
+        number: page,
+        currentIndex:currentIndex,
+      });
+    }else{
+      this.setState({
+        players: this.state.allPlayers.filter((player) =>
+        player.level.includes(this.state.levelFilter)
+       ).slice(currentIndex, currentIndex + 5),
+        number: page,
+        currentIndex:currentIndex,
+      });
+    }
 
+  }
 
 
   updateSearch(event) {
@@ -166,9 +176,9 @@ class PlayersList extends React.Component {
     }else{
         this.setState({
           levelFilter:level,
-          players: this.state.allPlayers.slice(currentIndex, currentIndex + 5).filter((player) =>
+          players: this.state.allPlayers.filter((player) =>
           player.level.includes(level)
-         )
+         ).slice(currentIndex, currentIndex + 5)
         });
 
     }
@@ -181,14 +191,15 @@ class PlayersList extends React.Component {
     }
 
 
-    let filteredPlayers = this.state.players.filter(
+    let filteredPlayers = this.state.allPlayers.filter(
       (player) => {
       return (player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
-       player.score == this.state.search || player.id == this.state.search ||﻿
-         player.level.toLowerCase().includes( this.state.search.toLowerCase() )
+       player.score.toString().includes(this.state.search) ||
+       player.id.toString().includes(this.state.search) ||﻿
+       player.level.toLowerCase().includes( this.state.search.toLowerCase() )
        )
       }
-    );
+    ).slice(this.state.currentIndex, this.state.currentIndex + 5);
 
 
     let suspected = this.state.suspected;
@@ -206,7 +217,7 @@ class PlayersList extends React.Component {
 
 
                 <Table
-                    height={'28vh'}
+                    height={'40vh'}
                     bodyStyle={{overflow:'visible'}}
                     style={{backgroundColor:'rgba(255, 255, 255,0.8)'}}
 
