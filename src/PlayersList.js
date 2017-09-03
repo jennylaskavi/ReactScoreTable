@@ -85,7 +85,7 @@ class PlayersList extends React.Component {
       number: 1,
       display:5,
       levelFilter:"all",
-      currentIndex:null,
+      currentIndex:0,
     };
   }
 
@@ -95,7 +95,7 @@ class PlayersList extends React.Component {
         .then(response => response.json())
         .then((players) => {
           this.setState({
-            players:players.slice(0,5),
+            players:players,
             allPlayers:players,
             total:players.length / 5
           });
@@ -141,15 +141,13 @@ class PlayersList extends React.Component {
     const level = this.state.levelFilter;
     if(level === "all"){
       this.setState({
-        players: this.state.allPlayers.slice(currentIndex, currentIndex + 5),
+        players: this.state.allPlayers,
         number: page,
         currentIndex:currentIndex,
       });
     }else{
       this.setState({
-        players: this.state.allPlayers.filter((player) =>
-        player.level.includes(this.state.levelFilter)
-       ).slice(currentIndex, currentIndex + 5),
+        players: this.state.allPlayers.filter((player) => player.level.includes(this.state.levelFilter)),
         number: page,
         currentIndex:currentIndex,
       });
@@ -167,18 +165,17 @@ class PlayersList extends React.Component {
 
   handleLevelChange(event,index, level){
     let currentIndex = this.state.currentIndex;
-    console.log("level changed");
     if(level === "all"){
       this.setState({
         levelFilter:level,
-        players:this.state.allPlayers.slice(currentIndex, currentIndex + 5)
+        players:this.state.allPlayers
       });
     }else{
         this.setState({
           levelFilter:level,
           players: this.state.allPlayers.filter((player) =>
           player.level.includes(level)
-         ).slice(currentIndex, currentIndex + 5)
+         )
         });
 
     }
@@ -191,7 +188,7 @@ class PlayersList extends React.Component {
     }
 
 
-    let filteredPlayers = this.state.allPlayers.filter(
+    let filteredPlayers = this.state.players.filter(
       (player) => {
       return (player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
        player.score.toString().includes(this.state.search) ||
