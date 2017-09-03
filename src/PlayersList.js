@@ -5,7 +5,10 @@ import TextField from 'material-ui/TextField';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Pagination from 'material-ui-pagination';
-import {SearchIcon} from 'material-ui/svg-icons/action/search';
+import IconButton from 'material-ui/IconButton';
+import SearchIcon from 'material-ui/svg-icons/action/search';
+import {Toolbar,ToolbarGroup} from 'material-ui/Toolbar';
+
 
 
 import {
@@ -29,22 +32,36 @@ const styles = {
   },
 
   title:{
-    fontSize:'20px',
-    color:'blue',
-    textAlign:'center'
+    color: '#CEF0D4',
+    fontFamily: 'Rouge Script, cursive',
+    fontSize: '48px',
+    fontWeight: 'normal',
+    lineHeight: '48px',
+    margin: '0 0 50px',
+    textAlign: 'center',
+    textShadow: '1px 1px 2px #082b34'
   },
 
   search:{
     marginRight:'70%',
     marginLeft:'30%',
+    width:'30%'
 
   },
 
   paging:{
     marginLeft:'35%',
+
   },
   suspected:{
-    backgroundColor:'red',
+    backgroundColor:'#FF7073'
+  },
+  dropMenuLine:{
+     display: 'none'
+  },
+  header:{
+    color:'#0A0A0A',
+    fontSize:'14px'
   }
 }
 
@@ -61,7 +78,8 @@ class PlayersList extends React.Component {
       total: 0,
       number: 1,
       display:5,
-      levelFilter:"all"
+      levelFilter:"all",
+      currentIndex:null,
     };
   }
 
@@ -73,7 +91,7 @@ class PlayersList extends React.Component {
           this.setState({
             players:players.slice(0,5),
             allPlayers:players,
-            total:players.length / 5,
+            total:players.length / 5
           });
         });
 
@@ -116,9 +134,12 @@ class PlayersList extends React.Component {
     const currentIndex = (page - 1) * 5;
     this.setState({
       players: this.state.allPlayers.slice(currentIndex, currentIndex + 5),
-      number: page
+      number: page,
+      levelFilter:"all",
+      currentIndex:currentIndex,
     });
   }
+
 
 
   updateSearch(event) {
@@ -129,10 +150,23 @@ class PlayersList extends React.Component {
 
 
   handleLevelChange(event,index, level){
+    let currentIndex = this.state.currentIndex;
     console.log("level changed");
-    this.setState({
-      levelFilter:level
-    });
+    if(level === "all"){
+      this.setState({
+        levelFilter:level,
+        players:this.state.allPlayers.slice(currentIndex, currentIndex + 5)
+      });
+    }else{
+        this.setState({
+          levelFilter:level,
+          players: this.state.allPlayers.slice(currentIndex, currentIndex + 5).filter((player) =>
+          player.level.includes(level)
+         )
+        });
+
+    }
+
   }
 
   render(){
@@ -143,46 +177,55 @@ class PlayersList extends React.Component {
 
     let filteredPlayers = this.state.players.filter(
       (player) => {
-      return (player.name.toLowerCase().includes( this.state.search.toLowerCase() ) || ﻿
+      return (player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
+       player.score == this.state.search || player.id == this.state.search ||﻿
          player.level.toLowerCase().includes( this.state.search.toLowerCase() )
        )
       }
     );
+
+
+    let suspected = this.state.suspected;
+    let levelFilter = this.state.levelFilter;
     return (
 
           <div style={styles.root}>
             <div style={styles.title}>Tournament 101 - Final Results</div>
-              <TextField style={styles.search} fullWidth={true} underlineShow={false} hintText="Search..."
-                value={this.state.search}
-                onChange={this.updateSearch.bind(this)}/>
+
+
+                <TextField style={styles.search} fullWidth={false} underlineShow={true} hintText="Search..."
+                  value={this.state.search}
+                  onChange={this.updateSearch.bind(this)}/>
+
+
+
                 <Table
-                    height={'60vh'}
+                    height={'35vh'}
                     bodyStyle={{overflow:'visible'}}
+
                 >
                   <TableHeader
                   adjustForCheckbox={false}
                   displaySelectAll={false}
                 >
                       <TableRow>
-                        <TableHeaderColumn>Id</TableHeaderColumn>
-                        <TableHeaderColumn>Name</TableHeaderColumn>
-
-
-                        <DropDownMenu value={this.state.levelFilter} onChange={this.handleLevelChange}>
-                         <MenuItem value={"all"} primaryText="Level : all"></MenuItem>
-                         <MenuItem value={"pro"} primaryText="pro" />
-                         <MenuItem value={"amateur"} primaryText="amateur" />
-                         <MenuItem value={"rookie"} primaryText="rookie" />
-                        </DropDownMenu>
-
-
-                        <TableHeaderColumn>Score</TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header}>Id</TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header}>Name</TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header}>
+                          <DropDownMenu value={levelFilter} underlineStyle={styles.dropMenuLine}  onChange={this.handleLevelChange.bind(this)}>
+                           <MenuItem value={"all"} primaryText="Level : all"></MenuItem>
+                           <MenuItem value={"pro"} primaryText="pro" />
+                           <MenuItem value={"amateur"} primaryText="amateur" />
+                           <MenuItem value={"rookie"} primaryText="rookie" />
+                          </DropDownMenu>
+                        </TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header}>Score</TableHeaderColumn>
                       </TableRow>
                   </TableHeader>
 
-                  <TableBody displayRowCheckbox={false} showRowHover={false} stripedRows={true}>
+                  <TableBody displayRowCheckbox={false} showRowHover={false} stripedRows={false}>
                     {filteredPlayers.map((player) =>
-                      this.state.suspected.includes(player.id) ? (
+                      suspected.includes(player.id) ? (
                         <TableRow style={styles.suspected} key={player.id}>
                           <TableRowColumn>{player.id}</TableRowColumn>
                           <TableRowColumn>{player.name.charAt(0).toUpperCase()+player.name.slice(1)}</TableRowColumn>
