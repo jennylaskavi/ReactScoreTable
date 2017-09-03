@@ -97,7 +97,7 @@ class PlayersList extends React.Component {
           this.setState({
             players:players,
             allPlayers:players,
-            total:players.length / 5
+            total:Math.round(players.length / 5)
           });
         });
 
@@ -168,14 +168,16 @@ class PlayersList extends React.Component {
     if(level === "all"){
       this.setState({
         levelFilter:level,
-        players:this.state.allPlayers
+        players:this.state.allPlayers,
+        total: Math.round(this.state.allPlayers.length / 5)
       });
     }else{
         this.setState({
           levelFilter:level,
           players: this.state.allPlayers.filter((player) =>
-          player.level.includes(level)
-         )
+          player.level.includes(level)),
+          total:Math.round(this.state.allPlayers.filter((player) =>
+          player.level.includes(level)).length / 5)
         });
 
     }
