@@ -1,6 +1,4 @@
 import React from 'react';
-import Player from './Player';
-import {Card} from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -8,8 +6,6 @@ import Pagination from 'material-ui-pagination';
 import IconButton from 'material-ui/IconButton';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import {Toolbar,ToolbarGroup} from 'material-ui/Toolbar';
-
-
 
 import {
   Table,
