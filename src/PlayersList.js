@@ -6,6 +6,7 @@ import Pagination from 'material-ui-pagination';
 import IconButton from 'material-ui/IconButton';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import {Toolbar,ToolbarGroup} from 'material-ui/Toolbar';
+import SvgIcon from 'material-ui/SvgIcon';
 
 import {
   Table,
@@ -17,6 +18,7 @@ import {
 } from 'material-ui/Table';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
+
 
 const styles = {
 
@@ -60,6 +62,12 @@ const styles = {
   dropMenuLine:{
      display: 'none'
   },
+  errow:{
+    fill: 'black',
+  },
+  level:{
+    marginLeft:'-2.5vh'
+  },
   header:{
     color:'#0A0A0A',
     fontWeight: 'bold',
@@ -92,6 +100,7 @@ class PlayersList extends React.Component {
         .then((players) => {
           this.setState({
             players:players,
+            filteredPlayers:players,
             allPlayers:players,
             total:Math.round(players.length / 5)
           });
@@ -140,12 +149,14 @@ class PlayersList extends React.Component {
         players: this.state.allPlayers,
         number: page,
         currentIndex:currentIndex,
+        total:Math.round(this.state.allPlayers.length / 5)
       });
     }else{
       this.setState({
         players: this.state.allPlayers.filter((player) => player.level.includes(this.state.levelFilter)),
         number: page,
         currentIndex:currentIndex,
+        total:Math.round(this.state.allPlayers.filter((player) => player.level.includes(this.state.levelFilter)).length/5 )
       });
     }
 
@@ -153,14 +164,38 @@ class PlayersList extends React.Component {
 
 
   updateSearch(event) {
-    this.setState({
-      search:event.target.value
-    });
+    let level = this.state.levelFilter;
+      this.setState({
+        search: event.target.value,
+        players: this.state.allPlayers.filter(
+          (player) => { return(
+            player.name.toLowerCase().includes( event.target.value.toLowerCase() ) ||
+            player.score.toString().includes(event.target.value) ||
+            player.id.toString().includes(event.target.value) ||﻿
+            player.level.toLowerCase().includes( event.target.value.toLowerCase() ||
+            player.level.toLowerCase().includes(level)  )
+          )
+
+          }
+        ),
+        total:Math.round(this.state.allPlayers.filter(
+          (player) => { return(
+            player.name.toLowerCase().includes( event.target.value.toLowerCase() ) ||
+            player.score.toString().includes(event.target.value) ||
+            player.id.toString().includes(event.target.value) ||﻿
+            player.level.toLowerCase().includes( event.target.value.toLowerCase() )
+          )
+
+          }
+        ).length / 5)
+
+    })
   }
 
 
+
   handleLevelChange(event,index, level){
-    let currentIndex = this.state.currentIndex;
+
     if(level === "all"){
       this.setState({
         levelFilter:level,
@@ -172,12 +207,13 @@ class PlayersList extends React.Component {
           levelFilter:level,
           players: this.state.allPlayers.filter((player) =>
           player.level.includes(level)),
+          currentIndex:this.state.allPlayers.filter((player) =>
+            player.level.includes(level)).length - 5,
           total:Math.round(this.state.allPlayers.filter((player) =>
           player.level.includes(level)).length / 5)
         });
 
     }
-
   }
 
   render(){
@@ -185,16 +221,7 @@ class PlayersList extends React.Component {
       return <div>Loading</div>;
     }
 
-
-    let filteredPlayers = this.state.players.filter(
-      (player) => {
-      return (player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
-       player.score.toString().includes(this.state.search) ||
-       player.id.toString().includes(this.state.search) ||﻿
-       player.level.toLowerCase().includes( this.state.search.toLowerCase() )
-       )
-      }
-    ).slice(this.state.currentIndex, this.state.currentIndex + 5);
+    let filteredPlayers = this.state.players.slice(this.state.currentIndex, this.state.currentIndex + 5);
 
 
     let suspected = this.state.suspected;
@@ -225,7 +252,7 @@ class PlayersList extends React.Component {
                         <TableHeaderColumn style={styles.header}>Id</TableHeaderColumn>
                         <TableHeaderColumn style={styles.header}>Name</TableHeaderColumn>
                         <TableHeaderColumn style={styles.header}>
-                          <DropDownMenu value={levelFilter} underlineStyle={styles.dropMenuLine}  onChange={this.handleLevelChange.bind(this)}>
+                          <DropDownMenu value={levelFilter} underlineStyle={styles.dropMenuLine} style={styles.level} iconStyle={styles.errow} onChange={this.handleLevelChange.bind(this)}>
                            <MenuItem value={"all"} primaryText="Level : all"></MenuItem>
                            <MenuItem value={"pro"} primaryText="pro" />
                            <MenuItem value={"amateur"} primaryText="amateur" />
