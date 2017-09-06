@@ -4,9 +4,9 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Pagination from 'material-ui-pagination';
 import IconButton from 'material-ui/IconButton';
-import SearchIcon from 'material-ui/svg-icons/action/search';
 import {Toolbar,ToolbarGroup} from 'material-ui/Toolbar';
-import SvgIcon from 'material-ui/SvgIcon';
+import AlertIcon from 'material-ui/svg-icons/alert/warning';
+import ViIcon from 'material-ui/svg-icons/action/done';
 
 import {
   Table,
@@ -23,7 +23,7 @@ injectTapEventPlugin();
 const styles = {
 
   root:{
-    width:'60%',
+    width:'50%',
     marginLeft: 'auto',
     marginRight: 'auto',
 
@@ -35,9 +35,10 @@ const styles = {
     fontSize: '48px',
     fontWeight: 'normal',
     lineHeight: '48px',
-    margin: '0 0 50px',
+    margin: '30px 0 50px',
     textAlign: 'center',
-    textShadow: '1px 1px 2px #082b34'
+    textShadow: '1px 1px 2px #082b34',
+
   },
 
   search:{
@@ -58,6 +59,7 @@ const styles = {
   },
   suspected:{
     backgroundColor:'#FF7073',
+    fontWeight:'bold'
 
   },
   dropMenuLine:{
@@ -67,13 +69,32 @@ const styles = {
     fill: 'black',
   },
   level:{
-    marginLeft:'-2.5vh'
+    marginLeft:'-2.5vh',
+    fontSize:'16px'
   },
   header:{
-    color:'#0A0A0A',
-    fontWeight: 'bold',
-    fontSize:'14px'
+    regularheader:{
+      color:'#0A0A0A',
+      fontWeight: 'bold',
+      fontSize:'16px'
+    },
+    firstheader:{
+      color:'#0A0A0A',
+      fontWeight: 'bold',
+      fontSize:'16px',
+      paddingLeft:'60px'
+    }
+
+  },
+  status:{
+    textAlign:'left',
+
+  },
+
+  firstElement:{
+    paddingLeft:'60px'
   }
+
 }
 
 class PlayersList extends React.Component {
@@ -166,7 +187,8 @@ class PlayersList extends React.Component {
   updateSearch(event) {
     let level = this.state.levelFilter;
     let searchValue = event.target.value;
-    if(level === "all" && searchValue === ""){
+
+     if(level === "all" && searchValue === ""){
       this.setState({
         search: searchValue,
         players:this.state.allPlayers,
@@ -233,8 +255,8 @@ class PlayersList extends React.Component {
   }
 
 
-
   handleLevelChange(event,index, level){
+    let searchValue = this.state.search;
 
     if(level === "all" && this.state.search === "" ){
       this.setState({
@@ -316,9 +338,12 @@ class PlayersList extends React.Component {
             <div style={styles.title}>Tournament 101 - Final Results</div>
 
 
-                <TextField style={styles.search} fullWidth={false} underlineShow={true} hintText="Search..."
-                  value={this.state.search}
-                  onChange={this.updateSearch.bind(this)}/>
+                  <TextField style={styles.search} fullWidth={false} underlineShow={true} hintText="Search..."
+                    value={this.state.search}
+                    onChange={this.updateSearch.bind(this)}>
+                  </TextField>
+
+
 
 
 
@@ -333,9 +358,9 @@ class PlayersList extends React.Component {
                   displaySelectAll={false}
                 >
                       <TableRow>
-                        <TableHeaderColumn style={styles.header}>Id</TableHeaderColumn>
-                        <TableHeaderColumn style={styles.header}>Name</TableHeaderColumn>
-                        <TableHeaderColumn style={styles.header}>
+                        <TableHeaderColumn style={styles.header.firstheader}>Id</TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header.regularheader}>Name</TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header.regularheader}>
                           <DropDownMenu value={levelFilter} underlineStyle={styles.dropMenuLine} style={styles.level} iconStyle={styles.errow} onChange={this.handleLevelChange.bind(this)}>
                            <MenuItem value={"all"} primaryText="Level : all"></MenuItem>
                            <MenuItem value={"pro"} primaryText="pro" />
@@ -343,7 +368,8 @@ class PlayersList extends React.Component {
                            <MenuItem value={"rookie"} primaryText="rookie" />
                           </DropDownMenu>
                         </TableHeaderColumn>
-                        <TableHeaderColumn style={styles.header}>Score</TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header.regularheader}>Score</TableHeaderColumn>
+                        <TableHeaderColumn style={styles.header.regularheader}></TableHeaderColumn>
                       </TableRow>
                   </TableHeader>
 
@@ -351,18 +377,20 @@ class PlayersList extends React.Component {
                     {filteredPlayers.map((player) =>
                       suspected.includes(player.id) ? (
                         <TableRow style={styles.suspected} key={player.id}>
-                          <TableRowColumn>{player.id}</TableRowColumn>
+                          <TableRowColumn style={styles.firstElement}>{player.id}</TableRowColumn>
                           <TableRowColumn>{player.name.charAt(0).toUpperCase()+player.name.slice(1)}</TableRowColumn>
                           <TableRowColumn>{player.level}</TableRowColumn>
                           <TableRowColumn>{player.score}</TableRowColumn>
+                          <TableRowColumn ><AlertIcon style={styles.status}/></TableRowColumn>
                         </TableRow>
                       ) :
                       (
                         <TableRow key={player.id}>
-                          <TableRowColumn>{player.id}</TableRowColumn>
+                          <TableRowColumn style={styles.firstElement}>{player.id}</TableRowColumn>
                           <TableRowColumn>{player.name.charAt(0).toUpperCase()+player.name.slice(1)}</TableRowColumn>
                           <TableRowColumn>{player.level}</TableRowColumn>
                           <TableRowColumn>{player.score}</TableRowColumn>
+                          <TableRowColumn><ViIcon style={styles.status}/></TableRowColumn>
                         </TableRow>
                       )
 
