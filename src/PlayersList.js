@@ -57,7 +57,8 @@ const styles = {
 
   },
   suspected:{
-    backgroundColor:'#FF7073'
+    backgroundColor:'#FF7073',
+
   },
   dropMenuLine:{
      display: 'none'
@@ -100,7 +101,6 @@ class PlayersList extends React.Component {
         .then((players) => {
           this.setState({
             players:players,
-            filteredPlayers:players,
             allPlayers:players,
             total:Math.round(players.length / 5)
           });
@@ -146,17 +146,17 @@ class PlayersList extends React.Component {
     const level = this.state.levelFilter;
     if(level === "all"){
       this.setState({
-        players: this.state.allPlayers,
+        players: this.state.players,
         number: page,
         currentIndex:currentIndex,
-        total:Math.round(this.state.allPlayers.length / 5)
+        total:Math.round(this.state.players.length / 5)
       });
     }else{
       this.setState({
-        players: this.state.allPlayers.filter((player) => player.level.includes(this.state.levelFilter)),
+        players: this.state.players.filter((player) => player.level.includes(this.state.levelFilter)),
         number: page,
         currentIndex:currentIndex,
-        total:Math.round(this.state.allPlayers.filter((player) => player.level.includes(this.state.levelFilter)).length/5 )
+        total:Math.round(this.state.players.filter((player) => player.level.includes(this.state.levelFilter)).length/5 )
       });
     }
 
@@ -165,52 +165,136 @@ class PlayersList extends React.Component {
 
   updateSearch(event) {
     let level = this.state.levelFilter;
+    let searchValue = event.target.value;
+    if(level === "all" && searchValue === ""){
       this.setState({
-        search: event.target.value,
+        search: searchValue,
+        players:this.state.allPlayers,
+        total: Math.round(this.state.allPlayers.length / 5),
+        currentIndex:0,
+        number:1
+      })
+    }
+    else if(level === "all" && searchValue !== ""){
+      this.setState({
+        search: searchValue,
+        players: this.state.allPlayers.filter((player) => {
+          return(
+            player.name.toLowerCase().includes( searchValue.toLowerCase() ) ||
+            player.score.toString().includes(searchValue) ||
+            player.id.toString().includes(searchValue) ||﻿
+            player.level.toLowerCase().includes( searchValue.toLowerCase() )
+          )
+        } ),
+        currentIndex:0,
+        number:1,
+        total:Math.round(this.state.allPlayers.filter((player) => {
+          return(
+            player.name.toLowerCase().includes( searchValue.toLowerCase() ) ||
+            player.score.toString().includes(searchValue) ||
+            player.id.toString().includes(searchValue) ||﻿
+            player.level.toLowerCase().includes( searchValue.toLowerCase() ))
+        } ).length / 5)
+      })
+    }
+    else if(level !== "all" && searchValue === ""){
+      this.setState({
+        search: searchValue,
+        players:this.state.allPlayers.filter((player) => player.level.includes(level)),
+        currentIndex:0,
+        number:1,
+        total:Math.round(this.state.allPlayers.filter((player) => player.level.includes(level)).length / 5)
+      })
+
+    }else{
+      this.setState({
+        search: searchValue,
         players: this.state.allPlayers.filter(
           (player) => { return(
-            player.name.toLowerCase().includes( event.target.value.toLowerCase() ) ||
-            player.score.toString().includes(event.target.value) ||
-            player.id.toString().includes(event.target.value) ||﻿
-            player.level.toLowerCase().includes( event.target.value.toLowerCase() ||
-            player.level.toLowerCase().includes(level)  )
-          )
+            player.name.toLowerCase().includes( searchValue.toLowerCase() ) ||
+            player.score.toString().includes(searchValue) ||
+            player.id.toString().includes(searchValue) ||﻿
+            player.level.toLowerCase().includes( searchValue.toLowerCase() )
 
-          }
-        ),
+          )}).filter((player) => player.level.includes(level)),
         total:Math.round(this.state.allPlayers.filter(
           (player) => { return(
-            player.name.toLowerCase().includes( event.target.value.toLowerCase() ) ||
-            player.score.toString().includes(event.target.value) ||
-            player.id.toString().includes(event.target.value) ||﻿
-            player.level.toLowerCase().includes( event.target.value.toLowerCase() )
-          )
-
-          }
-        ).length / 5)
-
+            player.name.toLowerCase().includes( searchValue.toLowerCase() ) ||
+            player.score.toString().includes(searchValue) ||
+            player.id.toString().includes(searchValue) ||﻿
+            player.level.toLowerCase().includes(searchValue.toLowerCase() )
+          )}
+        ).filter((player)=> player.level.includes(level)).length / 5),
+        currentIndex:0,
+        number:1
     })
+    }
+
   }
 
 
 
   handleLevelChange(event,index, level){
 
-    if(level === "all"){
+    if(level === "all" && this.state.search === "" ){
       this.setState({
         levelFilter:level,
         players:this.state.allPlayers,
-        total: Math.round(this.state.allPlayers.length / 5)
+        total: Math.round(this.state.allPlayers.length / 5),
+        currentIndex:0,
+        number:1
       });
-    }else{
+    }else if(level === "all" && this.state.search !== ""){
+      this.setState({
+        levelFilter:level,
+        players: this.state.allPlayers.filter((player) => {
+          return(
+            player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
+            player.score.toString().includes(this.state.search) ||
+            player.id.toString().includes(this.state.search) ||﻿
+            player.level.toLowerCase().includes( this.state.search.toLowerCase() ))
+        } ),
+        number:1,
+        currentIndex:0,
+        total:Math.round(this.state.allPlayers.filter((player) => {
+          return(
+            player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
+            player.score.toString().includes(this.state.search) ||
+            player.id.toString().includes(this.state.search) ||﻿
+            player.level.toLowerCase().includes( this.state.search.toLowerCase() ))
+        } ).length / 5)
+
+      })
+    }else if(level !== "all" && this.state.search === ""){
+      this.setState({
+        levelFilter:level,
+        players: this.state.allPlayers.filter((player) => player.level.includes(level)),
+        number:1,
+        currentIndex:0,
+        total:Math.round(this.state.allPlayers.filter((player) => player.level.includes(level)).length / 5)
+      })
+    }
+    else{
         this.setState({
           levelFilter:level,
           players: this.state.allPlayers.filter((player) =>
-          player.level.includes(level)),
-          currentIndex:this.state.allPlayers.filter((player) =>
-            player.level.includes(level)).length - 5,
+          player.level.includes(level)).filter((player) => {
+            return(
+              player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
+              player.score.toString().includes(this.state.search) ||
+              player.id.toString().includes(this.state.search) ||﻿
+              player.level.toLowerCase().includes( this.state.search.toLowerCase() ))
+          }),
+          number:1,
+          currentIndex:0,
           total:Math.round(this.state.allPlayers.filter((player) =>
-          player.level.includes(level)).length / 5)
+          player.level.includes(level) ).filter((player)=> {
+            return(
+              player.name.toLowerCase().includes( this.state.search.toLowerCase() ) ||
+              player.score.toString().includes(this.state.search) ||
+              player.id.toString().includes(this.state.search) ||﻿
+              player.level.toLowerCase().includes( this.state.search.toLowerCase() ))
+          }).length / 5)
         });
 
     }
